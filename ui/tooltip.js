@@ -8,6 +8,8 @@
  *
  * http://api.jqueryui.com/tooltip/
  */
+//>>css.structure: ../themes/base/tooltip.css
+//>>css.theme: ../themes/base/theme.css
 (function( factory ) {
 	if ( typeof define === "function" && define.amd ) {
 

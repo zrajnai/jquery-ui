@@ -8,6 +8,8 @@
  *
  * http://api.jqueryui.com/tabs/
  */
+//>>css.structure: ../themes/base/tabs.css
+//>>css.theme: ../themes/base/theme.css
 (function( factory ) {
 	if ( typeof define === "function" && define.amd ) {
 

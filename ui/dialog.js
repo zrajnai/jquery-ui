@@ -8,6 +8,8 @@
  *
  * http://api.jqueryui.com/dialog/
  */
+//>>css.structure: ../themes/base/dialog.css
+//>>css.theme: ../themes/base/theme.css
 (function( factory ) {
 	if ( typeof define === "function" && define.amd ) {
 

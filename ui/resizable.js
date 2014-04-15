@@ -8,6 +8,8 @@
  *
  * http://api.jqueryui.com/resizable/
  */
+//>>css.structure: ../themes/base/resizable.css
+//>>css.theme: ../themes/base/theme.css
 (function( factory ) {
 	if ( typeof define === "function" && define.amd ) {
 

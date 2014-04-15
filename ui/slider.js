@@ -8,6 +8,8 @@
  *
  * http://api.jqueryui.com/slider/
  */
+//>>css.structure: ../themes/base/slider.css
+//>>css.theme: ../themes/base/theme.css
 (function( factory ) {
 	if ( typeof define === "function" && define.amd ) {
 

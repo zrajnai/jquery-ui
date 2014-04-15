@@ -8,6 +8,8 @@
  *
  * http://api.jqueryui.com/sortable/
  */
+//>>css.structure: ../themes/base/sortable.css
+//>>css.theme: ../themes/base/theme.css
 (function( factory ) {
 	if ( typeof define === "function" && define.amd ) {
 

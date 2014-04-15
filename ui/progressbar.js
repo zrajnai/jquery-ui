@@ -8,6 +8,8 @@
  *
  * http://api.jqueryui.com/progressbar/
  */
+//>>css.structure: ../themes/base/progressbar.css
+//>>css.theme: ../themes/base/theme.css
 (function( factory ) {
 	if ( typeof define === "function" && define.amd ) {
 

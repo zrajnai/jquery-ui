@@ -8,6 +8,8 @@
  *
  * http://api.jqueryui.com/datepicker/
  */
+//>>css.structure: ../themes/base/datepicker.css
+//>>css.theme: ../themes/base/theme.css
 (function( factory ) {
 	if ( typeof define === "function" && define.amd ) {
 

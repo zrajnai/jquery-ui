@@ -8,6 +8,8 @@
  *
  * http://api.jqueryui.com/selectmenu
  */
+//>>css.structure: ../themes/base/selectmenu.css
+//>>css.theme: ../themes/base/theme.css
 (function( factory ) {
 	if ( typeof define === "function" && define.amd ) {
 

@@ -8,6 +8,9 @@
  *
  * http://api.jqueryui.com/category/ui-core/
  */
+//>>css.structure: ../themes/base/base.css
+//>>css.structure: ../themes/base/core.css
+//>>css.theme: ../themes/base/theme.css
 (function( factory ) {
 	if ( typeof define === "function" && define.amd ) {
 

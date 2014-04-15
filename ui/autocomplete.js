@@ -8,6 +8,8 @@
  *
  * http://api.jqueryui.com/autocomplete/
  */
+//>>css.structure: ../themes/base/autocomplete.css
+//>>css.theme: ../themes/base/theme.css
 (function( factory ) {
 	if ( typeof define === "function" && define.amd ) {
 

@@ -8,6 +8,8 @@
  *
  * http://api.jqueryui.com/spinner/
  */
+//>>css.structure: ../themes/base/spinner.css
+//>>css.theme: ../themes/base/theme.css
 (function( factory ) {
 	if ( typeof define === "function" && define.amd ) {
 

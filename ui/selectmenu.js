@@ -31,6 +31,10 @@ return $.widget( "ui.selectmenu", {
 	defaultElement: "<select>",
 	options: {
 		appendTo: null,
+		classes: {
+			"ui-selectmenu-button-open": "ui-corner-top",
+			"ui-selectmenu-button-closed": "ui-corner-all"
+		},
 		disabled: null,
 		icons: {
 			button: "ui-icon-triangle-1-s"
@@ -67,7 +71,8 @@ return $.widget( "ui.selectmenu", {
 	},
 
 	_drawButton: function() {
-		var that = this,
+		var icon,
+			that = this,
 			item = this._parseOption(
 				this.element.find( "option:selected" ),
 				this.element[ 0 ].selectedIndex
@@ -87,7 +92,6 @@ return $.widget( "ui.selectmenu", {
 
 		// Create button
 		this.button = $( "<span>", {
-			"class": "ui-selectmenu-button ui-widget ui-state-default ui-corner-all",
 			tabindex: this.options.disabled ? -1 : 0,
 			id: this.ids.button,
 			role: "combobox",
@@ -99,13 +103,17 @@ return $.widget( "ui.selectmenu", {
 		})
 			.insertAfter( this.element );
 
-		$( "<span>", {
-			"class": "ui-icon " + this.options.icons.button
-		})
-			.prependTo( this.button );
+		this._addClass( this.button, "ui-selectmenu-button ui-selectmenu-button-closed",
+			"ui-widget ui-state-default" );
+
+		icon = $( "<span>" ).prependTo( this.button );
+
+		this._addClass( icon, null, "ui-icon " + this.options.icons.button );
 
 		this.buttonItem = this._renderButtonItem( item )
 			.appendTo( this.button );
+
+		this._addClass( this.buttonItem, "ui-selectmenu-text" );
 
 		this._resizeButton();
 
@@ -133,15 +141,16 @@ return $.widget( "ui.selectmenu", {
 		});
 
 		// Wrap menu
-		this.menuWrap = $( "<div>", {
-			"class": "ui-selectmenu-menu ui-front"
-		})
-			.append( this.menu )
-			.appendTo( this._appendTo() );
+		this.menuWrap = $( "<div>" ).append( this.menu ).appendTo( this._appendTo() );
+
+		this._addClass( this.menuWrap, "ui-selectmenu-menu", "ui-front" );
 
 		// Initialize menu widget
 		this.menuInstance = this.menu
 			.menu({
+				classes: {
+					"ui-menu": "ui-corner-bottom"
+				},
 				role: "listbox",
 				select: function( event, ui ) {
 					event.preventDefault();
@@ -171,11 +180,6 @@ return $.widget( "ui.selectmenu", {
 			})
 			.menu( "instance" );
 
-		// Adjust menu styles to dropdown
-		this.menu
-			.addClass( "ui-corner-bottom" )
-			.removeClass( "ui-corner-all" );
-
 		// Don't close the menu on mouseleave
 		this.menuInstance._off( this.menu, "mouseleave" );
 
@@ -197,6 +201,7 @@ return $.widget( "ui.selectmenu", {
 				this._getSelectedItem().data( "ui-selectmenu-item" )
 			)
 		);
+		this._addClass( this.buttonItem, "ui-selectmenu-text" );
 		if ( !this.options.width ) {
 			this._resizeButton();
 		}
@@ -241,7 +246,7 @@ return $.widget( "ui.selectmenu", {
 		} else {
 
 			// Menu clears focus on close, reset focus to selected item
-			this.menu.find( ".ui-state-focus" ).removeClass( "ui-state-focus" );
+			this._removeClass( this.menu.find( ".ui-state-focus" ), null, "ui-state-focus" );
 			this.menuInstance.focus( null, this._getSelectedItem() );
 		}
 
@@ -282,9 +287,8 @@ return $.widget( "ui.selectmenu", {
 	},
 
 	_renderButtonItem: function( item ) {
-		var buttonItem = $( "<span>", {
-			"class": "ui-selectmenu-text"
-		});
+		var buttonItem = $( "<span>" );
+
 		this._setText( buttonItem, item.label );
 
 		return buttonItem;
@@ -296,14 +300,13 @@ return $.widget( "ui.selectmenu", {
 
 		$.each( items, function( index, item ) {
 			if ( item.optgroup !== currentOptgroup ) {
-				$( "<li>", {
-					"class": "ui-selectmenu-optgroup ui-menu-divider" +
-						( item.element.parent( "optgroup" ).prop( "disabled" ) ?
-							" ui-state-disabled" :
-							"" ),
+				var li = $( "<li>", {
 					text: item.optgroup
-				})
-					.appendTo( ul );
+				}).appendTo( ul );
+
+				that._addClass( li, "ui-selectmenu-optgroup", "ui-menu-divider" +
+					( item.element.parent( "optgroup" ).prop( "disabled" ) ?
+						" ui-state-disabled" : "" ) );
 
 				currentOptgroup = item.optgroup;
 			}
@@ -323,7 +326,7 @@ return $.widget( "ui.selectmenu", {
 			});
 
 		if ( item.disabled ) {
-			li.addClass( "ui-state-disabled" );
+			this._addClass( li, null, "ui-state-disabled" );
 		}
 		this._setText( wrapper, item.label );
 
@@ -498,6 +501,7 @@ return $.widget( "ui.selectmenu", {
 		// Change native select element
 		this.element[ 0 ].selectedIndex = item.index;
 		this.buttonItem.replaceWith( this.buttonItem = this._renderButtonItem( item ) );
+		this._addClass( this.buttonItem, "ui-selectmenu-text" );
 		this._setAria( item );
 		this._trigger( "select", event, { item: item } );
 
@@ -520,9 +524,10 @@ return $.widget( "ui.selectmenu", {
 
 	_setOption: function( key, value ) {
 		if ( key === "icons" ) {
-			this.button.find( "span.ui-icon" )
-				.removeClass( this.options.icons.button )
-				.addClass( value.button );
+			var icon = this.button.find( "span.ui-icon" );
+
+			this._removeClass( icon, null, this.options.icons.button );
+			this._addClass( icon, null, value.button );
 		}
 
 		this._super( key, value );
@@ -533,9 +538,8 @@ return $.widget( "ui.selectmenu", {
 
 		if ( key === "disabled" ) {
 			this.menuInstance.option( "disabled", value );
-			this.button
-				.toggleClass( "ui-state-disabled", value )
-				.attr( "aria-disabled", value );
+			this.button.attr( "aria-disabled", value );
+			this._toggleClass( null, "ui-state-disabled", value );
 
 			this.element.prop( "disabled", value );
 			if ( value ) {
@@ -572,11 +576,12 @@ return $.widget( "ui.selectmenu", {
 	},
 
 	_toggleAttr: function() {
-		this.button
-			.toggleClass( "ui-corner-top", this.isOpen )
-			.toggleClass( "ui-corner-all", !this.isOpen )
-			.attr( "aria-expanded", this.isOpen );
-		this.menuWrap.toggleClass( "ui-selectmenu-open", this.isOpen );
+		this.button.attr( "aria-expanded", this.isOpen );
+
+		this._toggleClass( this.button, "ui-selectmenu-button-closed", null, !this.isOpen )
+			._toggleClass( this.button, "ui-selectmenu-button-open", null, this.isOpen )
+			._toggleClass( this.menuWrap, "ui-selectmenu-open", null, this.isOpen );
+
 		this.menu.attr( "aria-hidden", !this.isOpen );
 	},
 

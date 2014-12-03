@@ -258,6 +258,7 @@ $.Widget.prototype = {
 		this.bindings = $();
 		this.hoverable = $();
 		this.focusable = $();
+		this.classObject = {};
 
 		if ( element !== this ) {
 			$.data( element, this.widgetFullName, this );
@@ -291,7 +292,12 @@ $.Widget.prototype = {
 	_init: $.noop,
 
 	destroy: function() {
+		var that = this;
 		this._destroy();
+		$.each( this.classObject, function( key, value ) {
+			that._removeClass( value, key );
+		});
+
 		// we can probably remove the unbind calls in 2.0
 		// all event bindings should go through this._on()
 		this.element
@@ -303,9 +309,7 @@ $.Widget.prototype = {
 		this.widget()
 			.unbind( this.eventNamespace )
 			.removeAttr( "aria-disabled" )
-			.removeClass(
-				this.widgetFullName + "-disabled " +
-				"ui-state-disabled" );
+			.removeClass( this.widgetFullName + "-disabled " + "ui-state-disabled" );
 
 		// clean up events and states
 		this.bindings.unbind( this.eventNamespace );
@@ -367,6 +371,20 @@ $.Widget.prototype = {
 		return this;
 	},
 	_setOption: function( key, value ) {
+		var classKey, elements;
+		if ( key === "classes" ) {
+			for ( classKey in value ) {
+				if ( value[ classKey ] !== this.options.classes[ classKey ] ) {
+					if ( this.classObject[ classKey ] && this.classObject[ classKey ].length > 0 ) {
+						elements =  $.extend( {}, this.classObject[ classKey ] );
+						this._removeClass( this.classObject[ classKey ], classKey );
+						elements.addClass(
+							this._classes( elements, classKey, null, true, value ) );
+					}
+				}
+			}
+		}
+
 		this.options[ key ] = value;
 
 		if ( key === "disabled" ) {
@@ -388,6 +406,55 @@ $.Widget.prototype = {
 	},
 	disable: function() {
 		return this._setOptions({ disabled: true });
+	},
+
+	_classes: function( element, keys, extra, add, object ) {
+		var full = [],
+			that = this;
+
+		object = object || this.options.classes;
+
+		function processClassString( classes, checkOption ) {
+			var current, i;
+			for ( i = 0; i < classes.length; i++ ) {
+				current = that.classObject[ classes[ i ] ] ? that.classObject[ classes[ i ] ] : $();
+				that.classObject[ classes[ i ] ] = current[ add ? "add" : "not" ]( element );
+
+				full.push( classes[ i ] );
+
+				if ( checkOption && object[ classes[ i ] ] ) {
+					full.push( object[ classes[ i ] ] );
+				}
+			}
+		}
+
+		if ( keys ) {
+			processClassString( keys.split( " " ), true );
+		}
+		if ( extra ) {
+			processClassString( extra.split( " " ) );
+		}
+
+		return full.join( " " );
+	},
+
+	_removeClass: function( element, keys, extra ) {
+		return this._toggleClass( element, keys, extra, false );
+	},
+
+	_addClass: function( element, keys, extra ) {
+		return this._toggleClass( element, keys, extra, true );
+	},
+
+	_toggleClass: function( element, keys, extra, bool ) {
+		bool = ( typeof bool === "boolean" ) ? bool : extra ;
+		if ( typeof element === "string" || element === null ) {
+			extra = keys;
+			keys = element;
+			element = this.element;
+		}
+		element.toggleClass( this._classes( element, keys, extra, bool ), bool );
+		return this;
 	},
 
 	_on: function( suppressDisabledCheck, element, handlers ) {
